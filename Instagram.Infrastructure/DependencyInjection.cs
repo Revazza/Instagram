@@ -1,4 +1,6 @@
-﻿using Instagram.Infrastructure.Db;
+﻿using Instagram.Application.Interfaces;
+using Instagram.Infrastructure.Db;
+using Instagram.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,16 @@ public static class DependencyInjection
         {
             op.UseSqlServer(configure.GetConnectionString(InstagramDbContext.ConnectionString));
         });
+        services.AddRepositories();
         return services;
     }
+
+    private static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped<IUserRepository, UserRepository>();
+
+        return services;
+    }
+
 }
+

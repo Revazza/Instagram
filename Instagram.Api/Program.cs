@@ -1,4 +1,5 @@
-
+using Instagram.Api.Mappings;
+using Instagram.Application;
 using Instagram.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services
+    .AddMappings()
+    .AddApplication(builder.Configuration)
     .AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();

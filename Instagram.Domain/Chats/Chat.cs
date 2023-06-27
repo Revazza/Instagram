@@ -10,13 +10,14 @@ public class Chat
     public ChatId ChatId { get; set; } = null!;
     public string ChatName { get; set; } = string.Empty;
     public List<User> Participants { get; set; }
-    public IEnumerable<Message> ChatMessages { get; set; }
+    public List<Message> ChatMessages { get; set; }
 
     //TODO:
     //ChatSettings should be added
 
     public Chat()
     {
+        Participants = new List<User>();
         ChatMessages = new List<Message>();
     }
 
