@@ -5,15 +5,22 @@ using Instagram.Domain.Posts;
 using Instagram.Domain.Posts.Entities;
 using Instagram.Domain.Users.Entities;
 using Instagram.Domain.Users.ValueObjects;
+using Microsoft.AspNetCore.Identity;
 
 namespace Instagram.Domain.Users;
 
-public record UserId(Guid Value);
-
-public class User
+public record UserId(Guid Value)
 {
-    public UserId UserId { get; set; } = null!;
-    public UserProfile Profile { get; set; } = null!;
+    public static UserId Create()
+    {
+        return new UserId(Guid.NewGuid());
+    }
+}
+
+
+public class User : IdentityUser<UserId>
+{
+    public string FullName { get; set; } = null!;
     public List<Post> Posts { get; set; }
     public List<Comment> UserComments { get; set; }
     public List<PostReaction> PostReactions { get; set; }
@@ -25,6 +32,7 @@ public class User
 
     public User()
     {
+        Id = UserId.Create();
         Friends = new List<FriendShip>();
         Messages = new List<Message>();
         Chats = new List<Chat>();

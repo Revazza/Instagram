@@ -1,9 +1,12 @@
 ﻿using Instagram.Application.Interfaces;
+using Instagram.Domain.Users;
 using Instagram.Infrastructure.Db;
 using Instagram.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics;
 
 namespace Instagram.Infrastructure;
 
@@ -17,9 +20,30 @@ public static class DependencyInjection
     {
         services.AddDbContext<InstagramDbContext>(op =>
         {
-            op.UseSqlServer(configure.GetConnectionString(InstagramDbContext.ConnectionString));
+            op.UseSqlServer(configure.GetConnectionString(InstagramDbContext.ConnectionString))
+            .LogTo(s => Debug.WriteLine(s))
+            .EnableDetailedErrors(true)
+            .EnableSensitiveDataLogging(true);
         });
-        services.AddRepositories();
+        services
+            .AddRepositories()
+            .AddIdentity();
+        return services;
+    }
+
+    private static IServiceCollection AddIdentity(this IServiceCollection services)
+    {
+        services.AddIdentity<User, IdentityRole<UserId>>(o =>
+        {
+            o.Password.RequireDigit = false;
+            o.Password.RequireLowercase = false;
+            o.Password.RequireUppercase = false;
+            o.Password.RequireNonAlphanumeric = false;
+            o.Password.RequiredLength = 2;
+        })
+            .AddEntityFrameworkStores<InstagramDbContext>()
+            .AddDefaultTokenProviders();
+
         return services;
     }
 

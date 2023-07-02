@@ -2,14 +2,15 @@
 using Instagram.Domain.Posts;
 using Instagram.Domain.Posts.Entities;
 using Instagram.Domain.Users;
+using Instagram.Domain.Users.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Instagram.Infrastructure.Db;
-
-public class InstagramDbContext : DbContext
+    
+public class InstagramDbContext : IdentityDbContext<User, UserRole, UserId>
 {
     public const string ConnectionString = "InstagramDbContext";
-    public DbSet<User> Users { get; set; }
     public DbSet<Post> Posts { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<PostReaction> PostReactions { get; set; }

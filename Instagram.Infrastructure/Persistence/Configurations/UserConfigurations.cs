@@ -16,21 +16,15 @@ public class UserConfigurations : IEntityTypeConfiguration<User>
 
     private void UserFieldConfigurations(EntityTypeBuilder<User> builder)
     {
-        builder.OwnsOne(u => u.Profile, p =>
-        {
-            p.Property(p => p.FirstName).HasMaxLength(50).IsRequired();
-            p.Property(p => p.LastName).HasMaxLength(80).IsRequired();
-            p.Property(p => p.Age).IsRequired();
-        });
 
     }
 
     private void UserEntityConfigurations(EntityTypeBuilder<User> builder)
     {
 
-        builder.HasKey(u => u.UserId);
+        builder.HasKey(u => u.Id);
 
-        builder.Property(u => u.UserId)
+        builder.Property(u => u.Id)
             .ValueGeneratedNever()
             .HasConversion(id => id.Value, value => new UserId(value));
 

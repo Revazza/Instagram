@@ -1,3 +1,6 @@
+using FluentValidation.Results;
+using System.Runtime.CompilerServices;
+
 namespace Instagram.Application.Common;
 
 public enum ResponseStatus
@@ -29,9 +32,18 @@ public class Response
         return this;
     }
 
-    public void IsFailure(string errorMsg)
+    public Response IsFailure(string errorMsg)
     {
+        Status = ResponseStatus.Error;
         Message = errorMsg;
+        return this;
+    }
+
+    public Response AddFluentValidationErrors(List<ValidationFailure> errors)
+    {
+        Status = ResponseStatus.Error;
+        Payload.Add("errors", errors.Select(error => error.ErrorMessage).ToList());
+        return this;
     }
 
 

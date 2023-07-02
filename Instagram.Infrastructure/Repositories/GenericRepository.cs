@@ -6,12 +6,13 @@ namespace Instagram.Infrastructure.Repositories;
 
 
 
-public class GenericRepository<T, TId> : IGenericRepository<T, TId>
+public class GenericRepository<T, TId> 
+    : IGenericRepository<T, TId>
     where T : class
     where TId : class
 {
     protected readonly InstagramDbContext _context;
-    private DbSet<T> _entities;
+    private readonly DbSet<T> _entities;
 
     public GenericRepository(
         InstagramDbContext context
@@ -34,7 +35,6 @@ public class GenericRepository<T, TId> : IGenericRepository<T, TId>
 
     public IQueryable<T> GetAll()
     {
-        var a = _entities.AsQueryable();
         return _entities.AsQueryable();
     }
 

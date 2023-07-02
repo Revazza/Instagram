@@ -3,8 +3,8 @@ using MediatR;
 
 namespace Instagram.Application.Users.Commands.CreateUser;
 
-public sealed record CreateUserCommand(
-    string FirstName,
-    string LastName,
+public record CreateUserCommand(
     string Email,
-    int Age) : IRequest<Response>;
+    string UserName,
+    string FullName,
+    string Password) : IRequest<Response>;

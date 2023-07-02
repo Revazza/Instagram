@@ -1,41 +1,46 @@
 using Instagram.Application.Common;
 using Instagram.Application.Interfaces;
-using Instagram.Domain.Chats;
 using Instagram.Domain.Users;
-using Instagram.Domain.Users.ValueObjects;
+using MapsterMapper;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace Instagram.Application.Users.Commands.CreateUser;
 
 internal sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Response>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IMapper _mapper;
+    private readonly UserManager<User> _userManager;
+
     public CreateUserCommandHandler(
-        IUserRepository userRepository
-        )
+        IUserRepository userRepository,
+        IMapper mapper,
+        UserManager<User> userManager)
     {
         _userRepository = userRepository;
+        _mapper = mapper;
+        _userManager = userManager;
     }
 
-    public async Task<Response> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
-        var userProfile = new UserProfile(
-            FirstName: request.FirstName,
-            LastName: request.LastName,
-            Email: request.Email,
-            Age: request.Age);
+        var userWithEmail = await _userRepository.FindByEmail(command.Email);
 
-        var user = new User()
+        if (userWithEmail is not null)
         {
-            UserId = new UserId(Guid.NewGuid()),
-            Profile = userProfile,
-        };
+            return new Response().IsFailure($"User with {command.Email} already exists");
+        }
 
+        var user = _mapper.Map<CreateUserCommand, User>(command);
+        
+
+        await _userManager.AddPasswordAsync(user, command.Password);
         await _userRepository.AddAsync(user);
         await _userRepository.SaveChangesAsync();
 
+        var newUser = _mapper.Map<User, CreateUserResponse>(user);
         return new Response()
-            .Add("newUser", user);
+            .Add("newUser", newUser);
     }
 }
