@@ -24,6 +24,7 @@ public class ValidationBehaviour<TRequest, TResponse>
         {
             return await next();
         }
+
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
 
         if (validationResult.IsValid)
@@ -33,7 +34,6 @@ public class ValidationBehaviour<TRequest, TResponse>
 
         var errors = validationResult.Errors;
 
-        return (dynamic)new Response()
-            .AddFluentValidationErrors(errors);
+        return (dynamic)Response.AddFluentValidationErrors(errors);
     }
 }

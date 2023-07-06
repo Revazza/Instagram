@@ -25,22 +25,29 @@ internal sealed class CreateUserCommandHandler : IRequestHandler<CreateUserComma
 
     public async Task<Response> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
-        var userWithEmail = await _userRepository.FindByEmail(command.Email);
+        var userWithEmail = await _userManager.FindByEmailAsync(command.Email);
 
         if (userWithEmail is not null)
         {
-            return new Response().IsFailure($"User with {command.Email} already exists");
+            return Response.Error($"User with {command.Email} already exists");
         }
 
-        var user = _mapper.Map<CreateUserCommand, User>(command);
-        
+        var newUser = _mapper.Map<CreateUserCommand, User>(command);
 
-        await _userManager.AddPasswordAsync(user, command.Password);
-        await _userRepository.AddAsync(user);
+        var userCreated = await _userManager.CreateAsync(newUser, command.Password);
+
+        if (!userCreated.Succeeded)
+        {
+            return Response.Error(userCreated.Errors.First().Description);
+        }
         await _userRepository.SaveChangesAsync();
 
-        var newUser = _mapper.Map<User, CreateUserResponse>(user);
-        return new Response()
-            .Add("newUser", newUser);
+        var userResponse = _mapper.Map<User, CreateUserResponse>(newUser);
+        return Response
+            .Ok()
+            .Add("newUser", userResponse);
     }
+
+
+
 }

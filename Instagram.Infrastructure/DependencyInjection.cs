@@ -40,6 +40,7 @@ public static class DependencyInjection
             o.Password.RequireUppercase = false;
             o.Password.RequireNonAlphanumeric = false;
             o.Password.RequiredLength = 2;
+            o.User.RequireUniqueEmail = true;
         })
             .AddEntityFrameworkStores<InstagramDbContext>()
             .AddDefaultTokenProviders();

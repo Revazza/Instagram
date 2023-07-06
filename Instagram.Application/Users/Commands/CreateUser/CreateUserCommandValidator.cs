@@ -11,10 +11,16 @@ public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
             .NotEmpty()
             .EmailAddress();
 
+        RuleFor(x => x.Password)
+            .NotEmpty()
+            .Length(2, 255)
+            .MustBeEnglish();
+
         RuleFor(x => x.FullName)
             .NotEmpty()
             .Length(2, 50)
-            .MustNotContainNumbers();
+            .MustNotContainNumbers()
+            .MustBeEnglish();
 
     }
 }

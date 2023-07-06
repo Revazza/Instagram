@@ -1,19 +1,16 @@
 using FluentValidation;
 using Instagram.Application.Authentication;
-using Instagram.Application.Common;
 using Instagram.Application.Common.Behaviour;
-using Instagram.Application.Common.Extensions.BuiltInTypes;
 using Instagram.Application.Services;
-using Instagram.Domain.Users;
 using Mapster;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 
 namespace Instagram.Application;
@@ -30,15 +27,37 @@ public static class DependencyInjection
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly())
         );
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
-
-
+        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped(
             typeof(IPipelineBehavior<,>),
             typeof(ValidationBehaviour<,>));
+
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-        services.AddMappingsConfigurations();
-        services.AddAuthenticationConfigurations(configuration);
+        //Custom methods
+        services
+            .AddMappingsConfigurations()
+            .AddAuthenticationConfigurations(configuration)
+            .AddCorsPolicy();
+
+        return services;
+    }
+
+    private static IServiceCollection AddCorsPolicy(
+        this IServiceCollection services)
+    {
+
+        services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(
+                policy =>
+                {
+                    policy.AllowAnyOrigin();
+                    policy.AllowAnyMethod();
+                    policy.AllowAnyHeader();
+                });
+
+        });
 
         return services;
     }
@@ -54,7 +73,7 @@ public static class DependencyInjection
         return services;
     }
 
-    private static void AddAuthenticationConfigurations(
+    private static IServiceCollection AddAuthenticationConfigurations(
         this IServiceCollection services,
         ConfigurationManager configuration)
     {
@@ -82,6 +101,14 @@ public static class DependencyInjection
                 options.TokenValidationParameters = tokenValidationParameters;
             });
 
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("User",
+                policy => policy.RequireClaim(ClaimTypes.Role, "user"));
+
+        });
+
+        return services;
     }
 
 

@@ -1,3 +1,4 @@
+using Instagram.Api;
 using Instagram.Api.Mappings;
 using Instagram.Application;
 using Instagram.Infrastructure;
@@ -7,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerConfigurations();
 
 builder.Services
     .AddMappings()
@@ -23,6 +25,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors();
+
 app.UseAuthentication();
 app.UseAuthorization();
 

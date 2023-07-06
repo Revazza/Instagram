@@ -4,7 +4,6 @@ using Instagram.Domain.Followers;
 using Instagram.Domain.Posts;
 using Instagram.Domain.Posts.Entities;
 using Instagram.Domain.Users.Entities;
-using Instagram.Domain.Users.ValueObjects;
 using Microsoft.AspNetCore.Identity;
 
 namespace Instagram.Domain.Users;
@@ -41,6 +40,7 @@ public class User : IdentityUser<UserId>
         PostReactions = new List<PostReaction>();
         Followers = new List<Follower>();
         Followings = new List<Follower>();
+        UserName = null!;
     }
 
 }

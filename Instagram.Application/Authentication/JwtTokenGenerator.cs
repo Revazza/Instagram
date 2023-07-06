@@ -10,7 +10,7 @@ namespace Instagram.Application.Authentication;
 
 public interface IJwtTokenGenerator
 {
-    public string Generate(UserId userId);
+    public string Generate(User user);
 }
 
 
@@ -26,12 +26,16 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         _dateTimeProvider = dateTimeProvider;
     }
 
-    public string Generate(UserId userId)
+    public string Generate(User user)
     {
         var claims = new List<Claim>()
         {
-            new Claim(JwtRegisteredClaimNames.Sub,userId.Value.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub,user.Id.Value.ToString()),
+            new Claim("fullName",user.FullName),
+            new Claim("userName",user.UserName!),
+            new Claim(ClaimTypes.Role,"user")
         };
+
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_settings.SecretKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

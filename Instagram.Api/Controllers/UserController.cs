@@ -1,12 +1,18 @@
 ﻿using Instagram.Application.Users.Commands.CreateUser;
+using Instagram.Application.Users.Queries.FilterUsersByUserName;
+using Instagram.Application.Users.Queries.Login;
 using Instagram.Contracts.User.Requests;
+using Mapster;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Instagram.Api.Controllers
 {
     [Route("User")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "User")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -21,6 +27,7 @@ namespace Instagram.Api.Controllers
             _mapper = mapper;
         }
 
+        [AllowAnonymous]
         [HttpPost("CreateUser")]
         public async Task<IActionResult> CreateUser(CreateUserRequest request)
         {
@@ -29,7 +36,22 @@ namespace Instagram.Api.Controllers
             return Ok(response);
         }
 
+        [AllowAnonymous]
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(LoginRequest request)
+        {
+            var query = _mapper.Map<LoginRequest, LoginQuery>(request);
+            var response = await _mediator.Send(query);
+            return Ok(response);
+        }
 
+        [HttpGet("FilterUsersByUserName")]
+        public async Task<IActionResult> GetUsersByUserName([FromQuery]string userName)
+        {
+            var query = new FilterUsersByUserNameQuery(userName);
+            var response = await _mediator.Send(query);
+            return Ok(response);
+        }
 
     }
 }

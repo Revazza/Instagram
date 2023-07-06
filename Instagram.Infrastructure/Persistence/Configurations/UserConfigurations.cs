@@ -16,7 +16,9 @@ public class UserConfigurations : IEntityTypeConfiguration<User>
 
     private void UserFieldConfigurations(EntityTypeBuilder<User> builder)
     {
-
+        builder.Property(u => u.UserName)
+            .HasMaxLength(50)
+            .IsRequired();
     }
 
     private void UserEntityConfigurations(EntityTypeBuilder<User> builder)

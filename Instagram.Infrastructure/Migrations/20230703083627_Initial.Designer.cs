@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Instagram.Infrastructure.Migrations
 {
     [DbContext(typeof(InstagramDbContext))]
-    [Migration("20230702123625_Initial")]
+    [Migration("20230703083627_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

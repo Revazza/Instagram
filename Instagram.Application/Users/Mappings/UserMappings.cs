@@ -1,4 +1,5 @@
 using Instagram.Application.Users.Commands.CreateUser;
+using Instagram.Application.Users.Queries.FilterUsersByUserName;
 using Instagram.Domain.Users;
 using Instagram.Domain.Users.ValueObjects;
 using Mapster;
@@ -21,6 +22,9 @@ public class UserMappings : IRegister
             .Map(dest => dest.UserName, src => src.UserName);
 
         config.NewConfig<User, CreateUserResponse>()
+            .Map(dest => dest.Id, src => src.Id.Value);
+
+        config.NewConfig<User, FilterUsersByUserNameResponse>()
             .Map(dest => dest.Id, src => src.Id.Value);
 
     }

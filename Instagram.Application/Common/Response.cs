@@ -1,5 +1,5 @@
 using FluentValidation.Results;
-using System.Runtime.CompilerServices;
+using Instagram.Domain.Chats.Entities;
 
 namespace Instagram.Application.Common;
 
@@ -11,19 +11,27 @@ public enum ResponseStatus
 
 public class Response
 {
+    private ResponseStatus error;
+
     public ResponseStatus Status { get; set; } = ResponseStatus.Ok;
     public string Message { get; set; } = string.Empty;
     public Dictionary<string, object> Payload { get; set; }
+    public List<string> Errors { get; set; }
 
-    public Response()
-    {
-        Payload = new Dictionary<string, object>();
-    }
 
-    public Response(string message)
+    private Response(string message, ResponseStatus status)
     {
         Message = message;
+        Status = status;
         Payload = new Dictionary<string, object>();
+        Errors = new List<string>();
+    }
+
+    private Response(ResponseStatus status)
+    {
+        Status = status;
+        Payload = new Dictionary<string, object>();
+        Errors = new List<string>();
     }
 
     public Response Add(string key, object value)
@@ -31,19 +39,28 @@ public class Response
         Payload.Add(key, value);
         return this;
     }
-
-    public Response IsFailure(string errorMsg)
+    public Response AddError(string error)
     {
-        Status = ResponseStatus.Error;
-        Message = errorMsg;
+        Errors.Add(error);
         return this;
     }
 
-    public Response AddFluentValidationErrors(List<ValidationFailure> errors)
+    public static Response Error(string errorMsg)
     {
-        Status = ResponseStatus.Error;
-        Payload.Add("errors", errors.Select(error => error.ErrorMessage).ToList());
-        return this;
+        return new Response(ResponseStatus.Error).AddError(errorMsg);
+    }
+
+    public static Response Ok(string message = "")
+    {
+        return new Response(message, ResponseStatus.Ok);
+    }
+
+    public static Response AddFluentValidationErrors(List<ValidationFailure> errors)
+    {
+        return new Response(ResponseStatus.Error)
+        {
+            Errors = errors.Select(error => error.ErrorMessage).ToList()
+        };
     }
 
 

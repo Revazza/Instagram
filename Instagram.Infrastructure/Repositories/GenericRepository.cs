@@ -4,8 +4,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Instagram.Infrastructure.Repositories;
 
-
-
 public class GenericRepository<T, TId> 
     : IGenericRepository<T, TId>
     where T : class
