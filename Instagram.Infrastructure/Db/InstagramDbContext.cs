@@ -1,4 +1,6 @@
-﻿using Instagram.Domain.Followers;
+﻿using Instagram.Domain.Chats;
+using Instagram.Domain.Chats.Entities;
+using Instagram.Domain.Followers;
 using Instagram.Domain.Posts;
 using Instagram.Domain.Posts.Entities;
 using Instagram.Domain.Users;
@@ -15,6 +17,8 @@ public class InstagramDbContext : IdentityDbContext<User, UserRole, UserId>
     public DbSet<Comment> Comments { get; set; }
     public DbSet<PostReaction> PostReactions { get; set; }
     public DbSet<Follower> Followers { get; set; }
+    public DbSet<Chat> Chats { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
 
     public InstagramDbContext(DbContextOptions<InstagramDbContext> opt) : base(opt)

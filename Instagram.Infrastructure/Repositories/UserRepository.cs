@@ -19,4 +19,5 @@ public class UserRepository : GenericRepository<User, UserId>, IUserRepository
                 .Take(50)
                 .ToListAsync();
     }
+
 }

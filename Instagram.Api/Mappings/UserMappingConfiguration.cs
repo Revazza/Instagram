@@ -1,8 +1,6 @@
-﻿using Instagram.Application.Users.Commands.CreateUser;
-using Instagram.Application.Users.Queries.FilterUsersByUserName;
-using Instagram.Contracts.User.Requests;
+﻿using Instagram.Application.DomainEntities.Users.Commands.CreateUser;
+using Instagram.Contracts.Users.Requests;
 using Mapster;
-using Newtonsoft.Json;
 
 namespace Instagram.Api.Mappings;
 

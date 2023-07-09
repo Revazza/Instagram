@@ -1,8 +1,7 @@
-﻿using Instagram.Application.Users.Commands.CreateUser;
-using Instagram.Application.Users.Queries.FilterUsersByUserName;
-using Instagram.Application.Users.Queries.Login;
-using Instagram.Contracts.User.Requests;
-using Mapster;
+﻿using Instagram.Application.DomainEntities.Users.Commands.CreateUser;
+using Instagram.Application.DomainEntities.Users.Queries.FilterUsersByUserName;
+using Instagram.Application.DomainEntities.Users.Queries.Login;
+using Instagram.Contracts.Users.Requests;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -46,7 +45,7 @@ namespace Instagram.Api.Controllers
         }
 
         [HttpGet("FilterUsersByUserName")]
-        public async Task<IActionResult> GetUsersByUserName([FromQuery]string userName)
+        public async Task<IActionResult> GetUsersByUserName([FromQuery] string userName)
         {
             var query = new FilterUsersByUserNameQuery(userName);
             var response = await _mediator.Send(query);
