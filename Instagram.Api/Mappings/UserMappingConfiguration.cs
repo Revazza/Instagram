@@ -1,4 +1,4 @@
-﻿using Instagram.Application.DomainEntities.Users.Commands.CreateUser;
+﻿using Instagram.Application.Commands.Users.CreateUser;
 using Instagram.Contracts.Users.Requests;
 using Mapster;
 

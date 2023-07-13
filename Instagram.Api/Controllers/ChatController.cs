@@ -1,6 +1,9 @@
-﻿using Instagram.Application.DomainEntities.Chats.CreateChat;
-using Instagram.Application.DomainEntities.Chats.GetChatsByUserId;
+﻿using Instagram.Application.Commands.Chats.CreateChat;
+using Instagram.Application.Common.Extensions;
+using Instagram.Application.Queries.Chats.GetChatsByUserId;
+using Instagram.Application.Queries.Chats.GetChatWithMessages;
 using Instagram.Contracts.Chats.Requests;
+using Instagram.Domain.Chats;
 using Mapster;
 using MapsterMapper;
 using MediatR;
@@ -38,6 +41,14 @@ namespace Instagram.Api.Controllers
         public async Task<IActionResult> GetUserChats([FromQuery] Guid userId, int limit)
         {
             var query = new GetChatsByUserIdQuery(userId, limit);
+            var response = await _mediator.Send(query);
+            return Ok(response);
+        }
+
+        [HttpGet("GetChatWithMessages")]
+        public async Task<IActionResult> GetChatWithMessages(Guid chatId)
+        {
+            var query = new GetChatWithMessagesQuery(new ChatId(chatId), User.GetCurrentUserId());
             var response = await _mediator.Send(query);
             return Ok(response);
         }

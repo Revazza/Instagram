@@ -1,6 +1,6 @@
-﻿using Instagram.Application.DomainEntities.Users.Commands.CreateUser;
-using Instagram.Application.DomainEntities.Users.Queries.FilterUsersByUserName;
-using Instagram.Application.DomainEntities.Users.Queries.Login;
+﻿using Instagram.Application.Commands.Users.CreateUser;
+using Instagram.Application.Queries.Users.FilterUsersByUserName;
+using Instagram.Application.Queries.Users.Login;
 using Instagram.Contracts.Users.Requests;
 using MapsterMapper;
 using MediatR;

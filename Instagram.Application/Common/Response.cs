@@ -45,6 +45,30 @@ public class Response
         return this;
     }
 
+    public object? Get(string key)
+    {
+        if(!Payload.TryGetValue(key, out object? obj))
+        {
+            return null;
+        }
+        return obj;
+    }
+
+    public T? Get<T>(string key) where T : class
+    {
+        if (!Payload.TryGetValue(key, out object? obj))
+        {
+            return null;
+        }
+
+        if(obj is not T)
+        {
+            return null;
+        }
+
+        return obj as T;
+    }    
+
     public static Response Error(string errorMsg)
     {
         return new Response(ResponseStatus.Error).AddError(errorMsg);

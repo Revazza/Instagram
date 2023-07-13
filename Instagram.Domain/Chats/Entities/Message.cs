@@ -2,7 +2,13 @@
 
 namespace Instagram.Domain.Chats.Entities;
 
-public record MessageId(Guid Value);
+public record MessageId(Guid Value)
+{
+    public static MessageId Create()
+    {
+        return new MessageId(Guid.NewGuid());
+    }
+}
 
 public class Message
 {

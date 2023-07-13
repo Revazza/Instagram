@@ -22,4 +22,12 @@ public class ChatRepository : GenericRepository<Chat, ChatId>, IChatRepository
             .Take(limit)
             .ToListAsync();
     }
+
+    public async Task<Chat?> GetChatWithParticipantsAsync(ChatId chatId)
+    {
+
+        return await _context.Chats
+            .Include(c => c.Participants)
+            .FirstOrDefaultAsync(c => c.ChatId == chatId);
+    }
 }

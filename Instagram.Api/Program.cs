@@ -1,6 +1,7 @@
 using Instagram.Api;
 using Instagram.Api.Mappings;
 using Instagram.Application;
+using Instagram.Application.Hubs.Chat;
 using Instagram.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,7 +28,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors();
-
+app.MapHub<ChatHub>("ChatHub");
 app.UseAuthentication();
 app.UseAuthorization();
 

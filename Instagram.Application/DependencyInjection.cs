@@ -1,6 +1,7 @@
 using FluentValidation;
 using Instagram.Application.Authentication;
 using Instagram.Application.Common.Behaviour;
+using Instagram.Application.Hubs.Chat;
 using Instagram.Application.Services;
 using Mapster;
 using MapsterMapper;
@@ -36,9 +37,19 @@ public static class DependencyInjection
 
         //Custom methods
         services
+            .AddSignalRWithConnections()
             .AddMappingsConfigurations()
             .AddAuthenticationConfigurations(configuration)
             .AddCorsPolicy();
+
+        return services;
+    }
+
+    private static IServiceCollection AddSignalRWithConnections(
+        this IServiceCollection services)
+    {
+        services.AddSignalR();
+        services.AddSingleton<IChatHubConnections, ChatHubConnections>();
 
         return services;
     }
@@ -49,14 +60,14 @@ public static class DependencyInjection
 
         services.AddCors(options =>
         {
-            options.AddDefaultPolicy(
-                policy =>
-                {
-                    policy.AllowAnyOrigin();
-                    policy.AllowAnyMethod();
-                    policy.AllowAnyHeader();
-                });
-
+            options.AddDefaultPolicy(policy =>
+            {
+                policy
+                    .WithOrigins("http://localhost:3000")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            });
         });
 
         return services;

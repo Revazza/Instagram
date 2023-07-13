@@ -1,4 +1,4 @@
-﻿using Instagram.Application.DomainEntities.Chats.CreateChat;
+﻿using Instagram.Application.Commands.Chats.CreateChat;
 using Instagram.Contracts.Chats.Requests;
 using Instagram.Domain.Users;
 using Mapster;
