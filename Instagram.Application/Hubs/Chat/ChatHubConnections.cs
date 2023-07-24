@@ -5,42 +5,37 @@ namespace Instagram.Application.Hubs.Chat;
 
 public interface IChatHubConnections
 {
-    bool AddConnection(string connectionId, ChatId chatId);
+    bool AddConnection(string connectionId, UserConnection chatId);
     bool RemoveConnection(string connectionId);
-    bool IsConnected(string connection);
-    ChatId? GetChatId(string connectionId);
+    UserConnection? GetUserConnection(string connectionId);
 
 }
 
 
 public class ChatHubConnections : IChatHubConnections
 {
-    public Dictionary<string, ChatId> Connections { get; set; }
+    public Dictionary<string, UserConnection> Connections { get; set; }
 
     public ChatHubConnections()
     {
-        Connections = new Dictionary<string, ChatId>();
+        Connections = new Dictionary<string, UserConnection>();
     }
 
-    public bool AddConnection(string connectionId, ChatId chatId)
-    {
-        return Connections.TryAdd(connectionId, chatId);
-    }
 
-    public ChatId? GetChatId(string connectionId)
+    public bool AddConnection(string connectionId, UserConnection userConnection)
     {
-        Connections.TryGetValue(connectionId, out ChatId? chatId);
-        return chatId;
+        return Connections.TryAdd(connectionId, userConnection);
     }
 
     public bool RemoveConnection(string connectionId)
     {
-        return Connections.Remove(connectionId); ;
+        return Connections.Remove(connectionId);
     }
 
-    public bool IsConnected(string connection)
+
+    public UserConnection? GetUserConnection(string connectionId)
     {
-        throw new NotImplementedException();
+        Connections.TryGetValue(connectionId, out UserConnection? userConnection);
+        return userConnection;
     }
-
 }

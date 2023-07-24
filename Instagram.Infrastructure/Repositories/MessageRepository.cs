@@ -16,7 +16,7 @@ public class MessageRepository : GenericRepository<Message, MessageId>, IMessage
     {
         return await _context.Messages
             .Where(m => m.OriginalChatId == chatId)
-            .OrderBy(m => m.CreatedAt)
+            .OrderByDescending(m => m.CreatedAt)
             .Skip(pageSize * messagesPerPage)
             .Take(messagesPerPage)
             .ToListAsync();

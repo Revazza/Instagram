@@ -40,6 +40,7 @@ public class GetChatWithMessagesQueryHandler : IRequestHandler<GetChatWithMessag
         var chatMessages = await _messageRepository.GetMessagesByChatIdAsync(request.ChatId);
 
         return Response.Ok()
+            .Add("id",chat.ChatId.Value)
             .Add("chatName", chat.ChatName)
             .Add("participant", participant)
             .Add("chatMessages", chatMessages.Adapt<List<GenericMessageResponse>>());

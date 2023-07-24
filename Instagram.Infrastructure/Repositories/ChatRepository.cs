@@ -16,7 +16,7 @@ public class ChatRepository : GenericRepository<Chat, ChatId>, IChatRepository
     {
         return await _context.Chats
             .Include(c => c.Participants)
-            .Include(c => c.ChatMessages)
+            .Include(c => c.ChatMessages.OrderByDescending(cm => cm.CreatedAt).Take(1))
             .Where(c => c.Participants.Any(p => p.Id == userId))
             .OrderBy(c => c.LastActivity)
             .Take(limit)
