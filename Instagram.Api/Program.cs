@@ -2,6 +2,7 @@ using Instagram.Api;
 using Instagram.Api.Mappings;
 using Instagram.Application;
 using Instagram.Application.Hubs.Chat;
+using Instagram.Application.Hubs.Notification;
 using Instagram.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,7 @@ app.UseHttpsRedirection();
 
 app.UseCors();
 app.MapHub<ChatHub>("ChatHub");
+app.MapHub<NotificationHub>("NotificationHub");
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -3,4 +3,5 @@
 public interface IChatClient
 {
     Task ReceiveMessage(object? message);
+    Task ReceiveNotification(object? notification);
 }

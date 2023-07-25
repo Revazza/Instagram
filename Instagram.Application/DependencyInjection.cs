@@ -1,6 +1,7 @@
 using FluentValidation;
 using Instagram.Application.Authentication;
 using Instagram.Application.Common.Behaviour;
+using Instagram.Application.Hubs;
 using Instagram.Application.Hubs.Chat;
 using Instagram.Application.Services;
 using Mapster;
@@ -50,6 +51,7 @@ public static class DependencyInjection
     {
         services.AddSignalR();
         services.AddSingleton<IChatHubConnections, ChatHubConnections>();
+        services.AddSingleton<IUserConnections, UserConnections>();
 
         return services;
     }
@@ -117,7 +119,9 @@ public static class DependencyInjection
 
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/ChatHub")))
+                            (path.StartsWithSegments("/ChatHub") ||
+                            (path.StartsWithSegments("/NotificationHub") )
+                            ))
                         {
                             context.Token = accessToken;
                         }
