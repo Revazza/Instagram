@@ -1,4 +1,5 @@
 ﻿using Instagram.Domain.Chats.Entities;
+using Instagram.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -25,6 +26,8 @@ public class MessageConfigurations : IEntityTypeConfiguration<Message>
         builder.HasKey(m => m.MessageId);
         builder.Property(m => m.MessageId)
             .HasConversion(id => id.Value, value => new MessageId(value));
+        builder.Property(m => m.SenderId)
+            .HasConversion(id => id.Value, value => new UserId(value));
 
         builder.HasOne(m => m.Sender)
             .WithMany(s => s.Messages)

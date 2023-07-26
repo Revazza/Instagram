@@ -50,4 +50,6 @@ public class CreateChatCommandHandler : IRequestHandler<CreateChatCommand, Respo
 
         return Response.Ok().Add("chatId", newChat.ChatId.Value);
     }
+
+
 }

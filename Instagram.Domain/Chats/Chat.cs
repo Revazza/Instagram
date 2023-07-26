@@ -20,6 +20,7 @@ public class Chat
     public DateTime LastActivity { get; set; }
 
 
+
     //TODO:
     //ChatSettings should be added
 

@@ -3,6 +3,7 @@ using Instagram.Application.Authentication;
 using Instagram.Application.Common.Behaviour;
 using Instagram.Application.Hubs;
 using Instagram.Application.Hubs.Chat;
+using Instagram.Application.Hubs.Notification;
 using Instagram.Application.Services;
 using Mapster;
 using MapsterMapper;

@@ -12,6 +12,7 @@ public class ChatRepository : GenericRepository<Chat, ChatId>, IChatRepository
     {
     }
 
+
     public async Task<List<Chat>> GetChatsByUserIdAsync(UserId userId, int limit = 30)
     {
         return await _context.Chats

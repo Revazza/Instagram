@@ -1,5 +1,3 @@
-using Instagram.Domain.Chats;
-
 namespace Instagram.Application.Hubs.Chat;
 
 
@@ -38,4 +36,5 @@ public class ChatHubConnections : IChatHubConnections
         Connections.TryGetValue(connectionId, out UserConnection? userConnection);
         return userConnection;
     }
+
 }

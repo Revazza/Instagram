@@ -25,6 +25,7 @@ internal sealed class CreateUserCommandHandler : IRequestHandler<CreateUserComma
 
     public async Task<Response> Handle(CreateUserCommand command, CancellationToken cancellationToken)
     {
+
         var userWithEmail = await _userManager.FindByEmailAsync(command.Email);
 
         if (userWithEmail is not null)
