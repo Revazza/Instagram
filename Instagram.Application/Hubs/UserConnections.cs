@@ -1,3 +1,4 @@
+using Instagram.Domain.Chats;
 using Instagram.Domain.Users;
 
 namespace Instagram.Application.Hubs;
@@ -32,4 +33,5 @@ public class UserConnections : IUserConnections
     {
         return Connections.FirstOrDefault(x => x.Value == userId).Key;
     }
+
 }

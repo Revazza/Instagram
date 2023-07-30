@@ -15,7 +15,7 @@ public class UserRepository : GenericRepository<User, UserId>, IUserRepository
     public async Task<List<User>> FilterUsersByUserNameAsync(string userName)
     {
         return await _context.Users
-            .Where(u => u.UserName!.ToLower().Contains(userName))
+            .Where(u => u.UserName!.ToLower().Contains(userName.ToLower()))
                 .Take(50)
                 .ToListAsync();
     }

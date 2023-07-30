@@ -3,6 +3,8 @@ using Instagram.Application.Common;
 using Instagram.Application.Common.Extensions;
 using Instagram.Application.Common.Extensions.BuiltInTypes;
 using Instagram.Application.Common.Responses;
+using Instagram.Application.Hubs.Chat.Models.Requests;
+using Instagram.Application.Hubs.Chat.Models.Response;
 using Instagram.Application.Hubs.Notification;
 using Instagram.Domain.Chats;
 using Instagram.Domain.Chats.Entities;
@@ -11,6 +13,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Instagram.Application.Hubs.Chat;
 
@@ -20,13 +24,13 @@ public class ChatHub : Hub<IChatClient>
     private readonly IChatHubConnections _chatConnections;
     private readonly IUserConnections _userConnections;
     private readonly IMediator _mediator;
-    private readonly IHubContext<NotificationHub> _notificationHubContext;
+    private readonly IHubContext<NotificationHub, INotificationClient> _notificationHubContext;
 
     public ChatHub(
         IChatHubConnections chatConnections,
         IMediator mediator,
         IUserConnections userConnections,
-        IHubContext<NotificationHub> notificationHubContext)
+        IHubContext<NotificationHub, INotificationClient> notificationHubContext)
     {
         _chatConnections = chatConnections;
         _mediator = mediator;
@@ -41,48 +45,52 @@ public class ChatHub : Hub<IChatClient>
         var convertedChatId = new ChatId(chatId);
 
         if (userConnection is not null &&
-            !userConnection.ConnectedChatIds.Contains(convertedChatId))
-        {
-            userConnection.ConnectedChatIds.Add(convertedChatId);
-        }
-
-        // Double check, but better readability than nested ifs
-        if (userConnection is not null)
+            userConnection.HasChatId(convertedChatId))
         {
             return;
         }
 
-        userConnection = new UserConnection(
+        userConnection ??= new UserConnection(
             Context.User!.GetCurrentUserId(),
-            connectionId,
-            convertedChatId);
+            connectionId);
+
+        userConnection.AddChatId(convertedChatId);
 
         await Groups.AddToGroupAsync(connectionId, chatId.ToString());
 
         _chatConnections.AddConnection(connectionId, userConnection);
     }
 
-    public async Task SendMessage(string message, Guid chatId, Guid receiverId)
+    public async Task SendMessage(SendMessageToUserRequest request)
     {
-        var userConnection = _chatConnections.GetUserConnection(Context.ConnectionId)!;
+        var chatId = request.ChatId.ToChatId();
+        var receiverId = request.ReceiverId.ToUserId();
+        var currentUserConnection = _chatConnections.GetUserConnection(Context.ConnectionId)!;
 
-        var command = new AddMessageToChatCommand(chatId.ToChatId(), userConnection.UserId, message);
+        var command = new AddMessageToChatCommand(chatId, currentUserConnection.UserId, request.Message);
         var response = await _mediator.Send(command);
-
+        var a = DateTime.UtcNow;
         if (response.Status != ResponseStatus.Ok)
         {
-            throw new ArgumentException("Message couldn't delivered");
+            throw new ArgumentException("Message couldn't be delivered");
         }
 
         var newMessage = response.Get<Message>("newMessage")!.Adapt<GenericMessageResponse>();
 
-        await Clients.Group(chatId.ToString())
+        await Clients.Group(chatId.Value.ToString())
             .ReceiveMessage(newMessage);
 
-        var receiverConnectionId = _userConnections.GetConnectionId(receiverId.ToUserId());
+        var receiverConnectionId = _userConnections.GetConnectionId(receiverId);
+
+        if (receiverConnectionId is null)
+        {
+            return;
+        }
+
         await _notificationHubContext.Clients
             .Client(receiverConnectionId)
-            .SendAsync("ReceiveMessageNotification", newMessage);
+            .ReceiveMessageNotification(newMessage);
+
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
@@ -102,4 +110,15 @@ public class ChatHub : Hub<IChatClient>
         await base.OnDisconnectedAsync(exception);
 
     }
+
+    public override Task OnConnectedAsync()
+    {
+        var connectionId = Context.ConnectionId;
+        var currentUserId = Context.User?.GetCurrentUserId()
+            ?? throw new UnauthorizedAccessException(nameof(OnConnectedAsync));
+
+
+        return base.OnConnectedAsync();
+    }
+
 }

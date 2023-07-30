@@ -1,5 +1,7 @@
 ﻿using Instagram.Application.Common;
+using Instagram.Application.Common.Responses;
 using Instagram.Application.Interfaces;
+using Mapster;
 using MapsterMapper;
 using MediatR;
 
@@ -24,18 +26,19 @@ public class GetChatsByUserIdQueryHandler : IRequestHandler<GetChatsByUserIdQuer
 
         var convertedChats = chats
             .Where(c => c.ChatMessages.Count != 0)
+            .OrderByDescending(c => c.LastActivity)
             .Select(s =>
             {
                 var participant = s.Participants.First(p => p.Id != request.UserId);
                 var lastMessage = s.ChatMessages.Any() ? s.ChatMessages.Last() : null;
-                return new GetChatsByUserIdResponse()
+                return new GetChatsByUserIdResponse
                 {
                     ChatId = s.ChatId.Value,
-                    UserId = participant.Id.Value,
-                    FullName = participant.FullName,
                     LastMessage = lastMessage?.MessageText ?? null,
-                    LastMessageAuthorId = lastMessage?.SenderId.Value ?? null,
-                    UserName = participant.UserName!
+                    ChatName = string.IsNullOrEmpty(s.ChatName) ? participant.UserName! : s.ChatName,
+                    LastMessageAuthorId = lastMessage?.SenderId?.Value,
+                    LastActivityAt = s.LastActivity,
+                    Participant = participant.Adapt<GenericUserResponse>(),
                 };
             });
 

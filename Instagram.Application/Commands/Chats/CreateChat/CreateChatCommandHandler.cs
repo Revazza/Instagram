@@ -40,7 +40,7 @@ public class CreateChatCommandHandler : IRequestHandler<CreateChatCommand, Respo
         var newChat = new Chat()
         {
             ChatId = ChatId.Create(),
-            ChatName = "Chat",
+            ChatName = string.Empty,
             LastActivity = DateTime.UtcNow,
             Participants = chatParticipants
         };

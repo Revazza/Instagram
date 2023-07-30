@@ -1,3 +1,5 @@
+using Instagram.Domain.Chats;
+
 namespace Instagram.Application.Hubs.Chat;
 
 

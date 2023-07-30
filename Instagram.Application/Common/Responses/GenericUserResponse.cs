@@ -6,5 +6,11 @@ public class GenericUserResponse
     public string FullName { get; set; } = null!;
     public string UserName { get; set; } = null!;
 
+
+    public GenericUserResponse()
+    {
+        
+    }
+
 }
 
