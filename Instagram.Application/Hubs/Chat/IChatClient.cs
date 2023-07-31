@@ -2,5 +2,5 @@
 
 public interface IChatClient
 {
-    Task ReceiveMessage(object? message);
+    Task UpdateChat(object? message);
 }
