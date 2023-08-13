@@ -1,12 +1,12 @@
 using Instagram.Application.Commands.Chats.AddMessageToChat;
+using Instagram.Application.Commands.Chats.UpdateChatMessagesStatus;
 using Instagram.Application.Common;
 using Instagram.Application.Common.Extensions;
 using Instagram.Application.Common.Extensions.BuiltInTypes;
 using Instagram.Application.Common.Responses;
 using Instagram.Application.Hubs.Chat.Models.Requests;
+using Instagram.Application.Hubs.Chat.Models.Response;
 using Instagram.Application.Hubs.Notification;
-using Instagram.Domain.Chats.Entities;
-using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -33,42 +33,67 @@ public class ChatHub : Hub<IChatClient>
         _userConnections = userConnections;
         _notificationHubContext = notificationHubContext;
     }
-    //senderCOn - GUbwWIjUaLPGd_e_VWpB-g
-    public async Task SendMessage(SendMessageToUserRequest request)
-    {
-        var chatId = request.ChatId.ToChatId();
-        var receiverId = request.ReceiverId.ToUserId();
-        var senderConnectionId = Context.ConnectionId;
-        var senderUserId = _chatConnections.GetUserId(senderConnectionId)!;
 
-        var command = new AddMessageToChatCommand(chatId, senderUserId, request.Message);
-        var response = await _mediator.Send(command);
-        if (response.Status != ResponseStatus.Ok)
+
+    public async Task<GenericMessageResponse> SendMessage(SendMessageToUserRequest request)
+    {
+        var receiverId = request.ReceiverId.ToUserId();
+        var receiverConnectionId = _userConnections.GetConnectionId(receiverId);
+        var isReceiverOnline = receiverConnectionId != null;
+
+        var newMessage = await AddMessageToChatAsync(request, isReceiverOnline);
+
+        if (!isReceiverOnline)
         {
-            throw new ArgumentException("Message couldn't be delivered");
+            return newMessage;
         }
 
-        var newMessage = response.Get<Message>("newMessage")!.Adapt<GenericMessageResponse>();
+        await _notificationHubContext.Clients
+            .Client(receiverConnectionId!)
+            .ReceiveMessageNotification(newMessage);
 
-        await Clients.Client(senderConnectionId)
+        var receiverChatConnectionId = _chatConnections.GetConnectionId(receiverId);
+        if (receiverChatConnectionId is null)
+        {
+            return newMessage;
+        }
+
+        await Clients
+            .Client(receiverChatConnectionId)
             .UpdateChat(newMessage);
 
-        var receiverConnectionId = _chatConnections.GetConnectionId(receiverId);
-        if (receiverConnectionId is not null)
+        return newMessage;
+    }
+
+    public async Task<UpdateChatMessagesStatusResponse> UpdateChatMessagesStatus(UpdateChatMessagesStatusRequest request)
+    {
+        var command = new UpdateChatMessagesStatusCommand(request.ChatId, request.Status);
+        var response = await _mediator.Send(command);
+
+        
+        if(response.Status != ResponseStatus.Ok)
         {
-            await Clients.Client(receiverConnectionId)
-                .UpdateChat(newMessage);
+            throw new Exception("Error occured while updating message status");
+        }
+        var userResponse = new UpdateChatMessagesStatusResponse(request.ChatId,request.Status.ToString());
+
+        var receiverConnectionId = _chatConnections.GetConnectionId(request.ReceiverId.ToUserId());
+
+        if (receiverConnectionId is null)
+        {
+            return userResponse;
         }
 
-        receiverConnectionId = _userConnections.GetConnectionId(receiverId);
-        if (receiverConnectionId is not null)
-        {
-            await _notificationHubContext.Clients
-                .Client(receiverConnectionId)
-                .ReceiveMessageNotification(newMessage);
-        }
+        await Clients.Client(receiverConnectionId)
+            .UpdateChatMessagesStatus(userResponse);
 
+        return userResponse;
+    }
 
+    private async Task<GenericMessageResponse> AddMessageToChatAsync(SendMessageToUserRequest request, bool isReceiverOnline)
+    {
+        var command = new AddMessageToChatCommand(request.ChatId.ToChatId(), request.Message, isReceiverOnline);
+        return await _mediator.Send(command);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)

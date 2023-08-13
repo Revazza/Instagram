@@ -11,8 +11,6 @@ public enum ResponseStatus
 
 public class Response
 {
-    private ResponseStatus error;
-
     public ResponseStatus Status { get; set; } = ResponseStatus.Ok;
     public string Message { get; set; } = string.Empty;
     public Dictionary<string, object> Payload { get; set; }
@@ -30,6 +28,12 @@ public class Response
     private Response(ResponseStatus status)
     {
         Status = status;
+        Payload = new Dictionary<string, object>();
+        Errors = new List<string>();
+    }
+
+    public Response()
+    {
         Payload = new Dictionary<string, object>();
         Errors = new List<string>();
     }

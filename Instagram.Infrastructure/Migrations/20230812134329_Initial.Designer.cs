@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Instagram.Infrastructure.Migrations
 {
     [DbContext(typeof(InstagramDbContext))]
-    [Migration("20230707130130_Initial")]
+    [Migration("20230812134329_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -76,6 +76,9 @@ namespace Instagram.Infrastructure.Migrations
 
                     b.Property<Guid>("SenderId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("MessageId");
 

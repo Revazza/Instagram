@@ -1,4 +1,5 @@
 ﻿using Instagram.Application.Common;
+using Instagram.Application.Common.Extensions.BuiltInTypes;
 using Instagram.Application.Common.Responses;
 using Instagram.Application.Interfaces;
 using Mapster;
@@ -22,7 +23,7 @@ public class GetChatsByUserIdQueryHandler : IRequestHandler<GetChatsByUserIdQuer
 
     public async Task<Response> Handle(GetChatsByUserIdQuery request, CancellationToken cancellationToken)
     {
-        var chats = await _chatRepository.GetChatsByUserIdAsync(request.UserId, request.Limit);
+        var chats = await _chatRepository.GetChatsByUserIdAsync(request.UserId);
 
         var convertedChats = chats
             .Where(c => c.ChatMessages.Count != 0)
@@ -30,13 +31,13 @@ public class GetChatsByUserIdQueryHandler : IRequestHandler<GetChatsByUserIdQuer
             .Select(s =>
             {
                 var participant = s.Participants.First(p => p.Id != request.UserId);
-                var lastMessage = s.ChatMessages.Any() ? s.ChatMessages.Last() : null;
+                var lastMessage = s.ChatMessages.Any() ? s.ChatMessages.Last().Adapt<GenericMessageResponse>() : null;
+
                 return new GetChatsByUserIdResponse
                 {
                     ChatId = s.ChatId.Value,
-                    LastMessage = lastMessage?.MessageText ?? null,
-                    ChatName = string.IsNullOrEmpty(s.ChatName) ? participant.UserName! : s.ChatName,
-                    LastMessageAuthorId = lastMessage?.SenderId?.Value,
+                    LastMessage = lastMessage,
+                    ChatName = s.ChatName.IsNullOrEmpty() ? participant.UserName! : s.ChatName,
                     LastActivityAt = s.LastActivity,
                     Participant = participant.Adapt<GenericUserResponse>(),
                 };

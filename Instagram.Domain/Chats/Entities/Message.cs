@@ -10,6 +10,12 @@ public record MessageId(Guid Value)
     }
 }
 
+public enum MessageStatus
+{
+    Sent = 0,
+    Delivered = 1,
+    Seen = 2
+}
 public class Message
 {
     public MessageId MessageId { get; set; } = null!;
@@ -19,6 +25,7 @@ public class Message
     public UserId SenderId { get; set; } = null!;
     public string MessageText { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public MessageStatus Status { get; set; } = MessageStatus.Sent;
 
 
 }

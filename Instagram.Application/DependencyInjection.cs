@@ -3,18 +3,15 @@ using Instagram.Application.Authentication;
 using Instagram.Application.Common.Behaviour;
 using Instagram.Application.Hubs;
 using Instagram.Application.Hubs.Chat;
-using Instagram.Application.Hubs.Notification;
 using Instagram.Application.Services;
 using Mapster;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
 
@@ -32,6 +29,7 @@ public static class DependencyInjection
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly())
         );
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+        services.AddTransient<IUserService, UserService>();
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddScoped(
             typeof(IPipelineBehavior<,>),
@@ -123,7 +121,7 @@ public static class DependencyInjection
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
                             (path.StartsWithSegments("/ChatHub") ||
-                            (path.StartsWithSegments("/NotificationHub") )
+                            (path.StartsWithSegments("/NotificationHub"))
                             ))
                         {
                             context.Token = accessToken;

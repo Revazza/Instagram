@@ -1,3 +1,5 @@
+using Microsoft.IdentityModel.Tokens;
+
 namespace Instagram.Application.Common.Extensions.BuiltInTypes;
 
 public static class StringExtensions
@@ -16,5 +18,11 @@ public static class StringExtensions
         }
         return -1;
     }
+
+    public static bool IsNullOrEmpty(this string str)
+    {
+        return string.IsNullOrEmpty(str);
+    }
+
 
 }

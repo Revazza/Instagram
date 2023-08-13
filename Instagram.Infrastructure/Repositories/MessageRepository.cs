@@ -15,6 +15,7 @@ public class MessageRepository : GenericRepository<Message, MessageId>, IMessage
     public async Task<List<Message>> GetMessagesByChatIdAsync(ChatId chatId, int pageSize = 0, int messagesPerPage = 30)
     {
         return await _context.Messages
+            .AsNoTracking()
             .Where(m => m.OriginalChatId == chatId)
             .OrderByDescending(m => m.CreatedAt)
             .Skip(pageSize * messagesPerPage)

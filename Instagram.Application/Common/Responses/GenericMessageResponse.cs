@@ -1,3 +1,5 @@
+using Instagram.Domain.Chats.Entities;
+
 namespace Instagram.Application.Common.Responses;
 
 public record GenericMessageResponse(
@@ -5,4 +7,5 @@ public record GenericMessageResponse(
     Guid OriginalChatId,
     Guid SenderId,
     string MessageText,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    string Status);

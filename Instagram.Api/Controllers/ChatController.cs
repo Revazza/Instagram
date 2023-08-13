@@ -1,4 +1,6 @@
 ﻿using Instagram.Application.Commands.Chats.CreateChat;
+using Instagram.Application.Commands.Chats.UpdateChatMessagesStatus;
+using Instagram.Application.Commands.Chats.UpdateChatMessagesStatus.Models;
 using Instagram.Application.Common.Extensions;
 using Instagram.Application.Queries.Chats.GetChatsByUserId;
 using Instagram.Application.Queries.Chats.GetChatWithMessages;
@@ -50,6 +52,14 @@ namespace Instagram.Api.Controllers
         {
             var query = new GetChatWithMessagesQuery(new ChatId(chatId), User.GetCurrentUserId());
             var response = await _mediator.Send(query);
+            return Ok(response);
+        }
+
+        [HttpPost("UpdateChatMessagesStatus")]
+        public async Task<IActionResult> UpdateChatMessagesStatus(UpdateChatMessagesStatusRequest request)
+        {
+            var command = request.Adapt<UpdateChatMessagesStatusCommand>();
+            var response = await _mediator.Send(command);
             return Ok(response);
         }
 
