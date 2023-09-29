@@ -3,6 +3,8 @@ using Instagram.Domain.Chats.Entities;
 using Instagram.Domain.Followers;
 using Instagram.Domain.Posts;
 using Instagram.Domain.Posts.Entities;
+using Instagram.Domain.Stories;
+using Instagram.Domain.Stories.Entities;
 using Instagram.Domain.Users.Entities;
 using Microsoft.AspNetCore.Identity;
 
@@ -28,6 +30,9 @@ public class User : IdentityUser<UserId>
     public List<Chat> Chats { get; set; }
     public List<Message> Messages { get; set; }
     public List<FriendShip> Friends { get; set; }
+    public List<Story> Stories { get; set; }
+    public List<StoryViewer> ViewedStories { get; set; }
+
 
     public User()
     {
@@ -40,6 +45,8 @@ public class User : IdentityUser<UserId>
         PostReactions = new List<PostReaction>();
         Followers = new List<Follower>();
         Followings = new List<Follower>();
+        Stories = new List<Story>();
+        ViewedStories = new List<StoryViewer>(); 
         UserName = null!;
     }
 

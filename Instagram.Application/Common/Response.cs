@@ -1,5 +1,4 @@
 using FluentValidation.Results;
-using Instagram.Domain.Chats.Entities;
 
 namespace Instagram.Application.Common;
 

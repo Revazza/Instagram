@@ -177,6 +177,50 @@ namespace Instagram.Infrastructure.Migrations
                     b.ToTable("Posts");
                 });
 
+            modelBuilder.Entity("Instagram.Domain.Stories.Entities.StoryViewer", b =>
+                {
+                    b.Property<Guid>("ViewedStoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ViewerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ViewedStoryId", "ViewerId");
+
+                    b.HasIndex("ViewerId");
+
+                    b.ToTable("StoryViewer");
+                });
+
+            modelBuilder.Entity("Instagram.Domain.Stories.Story", b =>
+                {
+                    b.Property<Guid>("StoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FileSize")
+                        .HasColumnType("int");
+
+                    b.HasKey("StoryId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("Stories");
+                });
+
             modelBuilder.Entity("Instagram.Domain.Users.Entities.FriendShip", b =>
                 {
                     b.Property<Guid>("FriendShipId")
@@ -494,6 +538,36 @@ namespace Instagram.Infrastructure.Migrations
                     b.Navigation("PostAuthor");
                 });
 
+            modelBuilder.Entity("Instagram.Domain.Stories.Entities.StoryViewer", b =>
+                {
+                    b.HasOne("Instagram.Domain.Stories.Story", "ViewedStory")
+                        .WithMany("StoryViewers")
+                        .HasForeignKey("ViewedStoryId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+
+                    b.HasOne("Instagram.Domain.Users.User", "Viewer")
+                        .WithMany("ViewedStories")
+                        .HasForeignKey("ViewerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ViewedStory");
+
+                    b.Navigation("Viewer");
+                });
+
+            modelBuilder.Entity("Instagram.Domain.Stories.Story", b =>
+                {
+                    b.HasOne("Instagram.Domain.Users.User", "Author")
+                        .WithMany("Stories")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
             modelBuilder.Entity("Instagram.Domain.Users.Entities.FriendShip", b =>
                 {
                     b.HasOne("Instagram.Domain.Users.User", "Friend")
@@ -568,6 +642,11 @@ namespace Instagram.Infrastructure.Migrations
                     b.Navigation("PostReactions");
                 });
 
+            modelBuilder.Entity("Instagram.Domain.Stories.Story", b =>
+                {
+                    b.Navigation("StoryViewers");
+                });
+
             modelBuilder.Entity("Instagram.Domain.Users.User", b =>
                 {
                     b.Navigation("Followers");
@@ -582,7 +661,11 @@ namespace Instagram.Infrastructure.Migrations
 
                     b.Navigation("Posts");
 
+                    b.Navigation("Stories");
+
                     b.Navigation("UserComments");
+
+                    b.Navigation("ViewedStories");
                 });
 #pragma warning restore 612, 618
         }

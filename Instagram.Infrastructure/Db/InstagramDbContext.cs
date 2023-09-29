@@ -3,6 +3,8 @@ using Instagram.Domain.Chats.Entities;
 using Instagram.Domain.Followers;
 using Instagram.Domain.Posts;
 using Instagram.Domain.Posts.Entities;
+using Instagram.Domain.Stories;
+using Instagram.Domain.Stories.Entities;
 using Instagram.Domain.Users;
 using Instagram.Domain.Users.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -19,6 +21,7 @@ public class InstagramDbContext : IdentityDbContext<User, UserRole, UserId>
     public DbSet<Follower> Followers { get; set; }
     public DbSet<Chat> Chats { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<Story> Stories { get; set; }
 
 
     public InstagramDbContext(DbContextOptions<InstagramDbContext> opt) : base(opt)

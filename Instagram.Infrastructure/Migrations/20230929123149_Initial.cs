@@ -233,6 +233,28 @@ namespace Instagram.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Stories",
+                columns: table => new
+                {
+                    StoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AuthorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Duration = table.Column<int>(type: "int", nullable: false),
+                    ContentType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FileSize = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stories", x => x.StoryId);
+                    table.ForeignKey(
+                        name: "FK_Stories_AspNetUsers_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ChatParticipants",
                 columns: table => new
                 {
@@ -335,6 +357,29 @@ namespace Instagram.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "StoryViewer",
+                columns: table => new
+                {
+                    ViewedStoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ViewerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StoryViewer", x => new { x.ViewedStoryId, x.ViewerId });
+                    table.ForeignKey(
+                        name: "FK_StoryViewer_AspNetUsers_ViewerId",
+                        column: x => x.ViewerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_StoryViewer_Stories_ViewedStoryId",
+                        column: x => x.ViewedStoryId,
+                        principalTable: "Stories",
+                        principalColumn: "StoryId");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -428,6 +473,16 @@ namespace Instagram.Infrastructure.Migrations
                 name: "IX_Posts_PostAuthorId",
                 table: "Posts",
                 column: "PostAuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Stories_AuthorId",
+                table: "Stories",
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StoryViewer_ViewerId",
+                table: "StoryViewer",
+                column: "ViewerId");
         }
 
         /// <inheritdoc />
@@ -467,6 +522,9 @@ namespace Instagram.Infrastructure.Migrations
                 name: "PostReactions");
 
             migrationBuilder.DropTable(
+                name: "StoryViewer");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -474,6 +532,9 @@ namespace Instagram.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Posts");
+
+            migrationBuilder.DropTable(
+                name: "Stories");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

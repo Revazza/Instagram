@@ -19,8 +19,6 @@ public class Chat
     public List<Message> ChatMessages { get; set; }
     public DateTime LastActivity { get; set; }
 
-
-
     //TODO:
     //ChatSettings should be added
 

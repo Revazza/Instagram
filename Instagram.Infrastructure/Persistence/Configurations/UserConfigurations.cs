@@ -23,7 +23,6 @@ public class UserConfigurations : IEntityTypeConfiguration<User>
 
     private void UserEntityConfigurations(EntityTypeBuilder<User> builder)
     {
-
         builder.HasKey(u => u.Id);
 
         builder.Property(u => u.Id)

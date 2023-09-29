@@ -3,7 +3,6 @@ using Instagram.Application.Interfaces;
 using Instagram.Domain.Chats;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Update.Internal;
 
 namespace Instagram.Application.Commands.Chats.CreateChat;
 
@@ -48,7 +47,7 @@ public class CreateChatCommandHandler : IRequestHandler<CreateChatCommand, Respo
         await _chatRepository.AddAsync(newChat);
         await _chatRepository.SaveChangesAsync();
 
-        return Response.Ok().Add("chatId", newChat.ChatId.Value);
+        return Response.Ok().Add("chat", newChat);
     }
 
 

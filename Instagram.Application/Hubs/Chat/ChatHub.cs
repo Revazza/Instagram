@@ -69,7 +69,6 @@ public class ChatHub : Hub<IChatClient>
     {
         var command = new UpdateChatMessagesStatusCommand(request.ChatId, request.Status);
         var response = await _mediator.Send(command);
-
         
         if(response.Status != ResponseStatus.Ok)
         {
