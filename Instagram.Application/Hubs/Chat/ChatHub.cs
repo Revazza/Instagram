@@ -35,46 +35,54 @@ public class ChatHub : Hub<IChatClient>
     }
 
 
-    public async Task<GenericMessageResponse> SendMessage(SendMessageToUserRequest request)
+    public async Task<GenericChatResponse> SendMessage(SendMessageToUserRequest request)
     {
         var receiverId = request.ReceiverId.ToUserId();
         var receiverConnectionId = _userConnections.GetConnectionId(receiverId);
         var isReceiverOnline = receiverConnectionId != null;
 
-        var newMessage = await AddMessageToChatAsync(request, isReceiverOnline);
+        var updatedChat = await AddMessageToChatAsync(request, isReceiverOnline);
 
         if (!isReceiverOnline)
         {
-            return newMessage;
+            return updatedChat;
         }
 
         await _notificationHubContext.Clients
             .Client(receiverConnectionId!)
-            .ReceiveMessageNotification(newMessage);
+            .ReceiveMessageNotification(updatedChat.ChatMessages.Last());
 
         var receiverChatConnectionId = _chatConnections.GetConnectionId(receiverId);
         if (receiverChatConnectionId is null)
         {
-            return newMessage;
+            return updatedChat;
         }
 
-        await Clients
-            .Client(receiverChatConnectionId)
-            .UpdateChat(newMessage);
+        if (request.IsFirstMessage)
+        {
+            await Clients.Client(receiverChatConnectionId)
+                .AddNewChat(updatedChat);
+        }
+        else
+        {
+            await Clients
+                .Client(receiverChatConnectionId)
+                .UpdateChat(updatedChat.ChatMessages.Last());
+        }
 
-        return newMessage;
+        return updatedChat;
     }
 
     public async Task<UpdateChatMessagesStatusResponse> UpdateChatMessagesStatus(UpdateChatMessagesStatusRequest request)
     {
         var command = new UpdateChatMessagesStatusCommand(request.ChatId, request.Status);
         var response = await _mediator.Send(command);
-        
-        if(response.Status != ResponseStatus.Ok)
+
+        if (response.Status != ResponseStatus.Ok)
         {
             throw new Exception("Error occured while updating message status");
         }
-        var userResponse = new UpdateChatMessagesStatusResponse(request.ChatId,request.Status.ToString());
+        var userResponse = new UpdateChatMessagesStatusResponse(request.ChatId, request.Status.ToString());
 
         var receiverConnectionId = _chatConnections.GetConnectionId(request.ReceiverId.ToUserId());
 
@@ -89,7 +97,7 @@ public class ChatHub : Hub<IChatClient>
         return userResponse;
     }
 
-    private async Task<GenericMessageResponse> AddMessageToChatAsync(SendMessageToUserRequest request, bool isReceiverOnline)
+    private async Task<GenericChatResponse> AddMessageToChatAsync(SendMessageToUserRequest request, bool isReceiverOnline)
     {
         var command = new AddMessageToChatCommand(request.ChatId.ToChatId(), request.Message, isReceiverOnline);
         return await _mediator.Send(command);

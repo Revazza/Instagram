@@ -3,7 +3,9 @@ using Instagram.Application.Commands.Chats.DeleteChat;
 using Instagram.Application.Commands.Chats.UpdateChatMessagesStatus;
 using Instagram.Application.Commands.Chats.UpdateChatMessagesStatus.Models;
 using Instagram.Application.Common.Extensions;
+using Instagram.Application.Common.Extensions.BuiltInTypes;
 using Instagram.Application.Queries.Chats.GetAllChats;
+using Instagram.Application.Queries.Chats.GetChatById;
 using Instagram.Application.Queries.Chats.GetChatsByUserId;
 using Instagram.Application.Queries.Chats.GetChatWithMessages;
 using Instagram.Contracts.Chats.Requests;
@@ -62,6 +64,15 @@ namespace Instagram.Api.Controllers
         {
             var command = request.Adapt<UpdateChatMessagesStatusCommand>();
             var response = await _mediator.Send(command);
+            return Ok(response);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("GetChatById")]
+        public async Task<IActionResult> GetChatById(Guid chatId)
+        {
+            var query = new GetChatByIdQuery(chatId.ToChatId());
+            var response = await _mediator.Send(query);
             return Ok(response);
         }
 

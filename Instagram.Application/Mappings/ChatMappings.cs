@@ -2,6 +2,7 @@
 using Instagram.Application.Commands.Chats.UpdateChatMessagesStatus.Models;
 using Instagram.Application.Common.Extensions.BuiltInTypes;
 using Instagram.Application.Common.Responses;
+using Instagram.Domain.Chats;
 using Instagram.Domain.Users;
 using Mapster;
 
@@ -16,6 +17,12 @@ public class ChatMappings : IRegister
 
         config.NewConfig<UpdateChatMessagesStatusRequest, UpdateChatMessagesStatusCommand>()
             .Map(dest => dest.ChatId, src => src.ChatId.ToChatId());
+        config.NewConfig<Chat, GenericChatResponse>()
+            .Map(dest => dest.ChatId, src => src.ChatId.Value)
+            .Map(dest => dest.Participants, src => src.Participants.Adapt<List<GenericUserResponse>>())
+            .Map(dest => dest.ChatMessages, src => src.ChatMessages.Adapt<List<GenericMessageResponse>>())
+            .Map(dest => dest.LastActivityAt, src =>src.LastActivity);
+
 
     }
 }

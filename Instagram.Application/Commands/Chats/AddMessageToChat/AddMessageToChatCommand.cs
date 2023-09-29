@@ -7,4 +7,4 @@ namespace Instagram.Application.Commands.Chats.AddMessageToChat;
 public record AddMessageToChatCommand(
     ChatId ChatId,
     string Message,
-    bool isReceiverOnline) : IRequest<GenericMessageResponse>;
+    bool IsReceiverOnline) : IRequest<GenericChatResponse>;

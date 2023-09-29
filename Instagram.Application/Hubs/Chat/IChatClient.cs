@@ -6,4 +6,5 @@ public interface IChatClient
 {
     Task UpdateChat(object? message);
     Task UpdateChatMessagesStatus(UpdateChatMessagesStatusResponse response);
+    Task AddNewChat(object? chat);
 }
