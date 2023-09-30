@@ -1,4 +1,5 @@
 ﻿using Instagram.Application.Commands.Users.CreateUser;
+using Instagram.Application.Queries.Stories.GetFriendsStories;
 using Instagram.Application.Queries.Users.FilterUsersByUserName;
 using Instagram.Application.Queries.Users.Login;
 using Instagram.Contracts.Users.Requests;
@@ -52,5 +53,13 @@ namespace Instagram.Api.Controllers
             return Ok(response);
         }
 
+        [HttpGet("GetFriendsWithStory")]
+        public async Task<IActionResult> GetFriendsWithStory()
+        {
+            var query = new GetFriendsWithStoryQuery();
+            var response = await _mediator.Send(query);
+            return Ok(response);
+        }
+            
     }
 }

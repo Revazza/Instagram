@@ -5,6 +5,7 @@ using Instagram.Application.Common.Converters;
 using Instagram.Application.Hubs.Chat;
 using Instagram.Application.Hubs.Notification;
 using Instagram.Infrastructure;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
